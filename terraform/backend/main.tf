@@ -10,11 +10,10 @@ terraform {
     }
   }
   backend "s3" {
-    # Estos valores se configurarán al inicializar el backend
-    # bucket         = "TU_TERRAFORM_BUCKET"
-    # key            = "PROYECTO/backend/terraform.tfstate"
-    # region         = "us-east-1"
-    # dynamodb_table = "terraform-lock-table"
+    bucket         = "terraform-state-bucket-xj3gjz0e"
+    key            = "aws-template-app/backend/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-lock-table"
   }
 }
 
