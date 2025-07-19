@@ -40,7 +40,7 @@ jobs:
       - name: Set Web API URL environment variable
         run: |
           cd app
-          echo "NEXT_PUBLIC_WEB_API_URL=https://sqz842ihv8.execute-api.us-east-1.amazonaws.com/prod" >> .env.local
+          echo "NEXT_PUBLIC_WEB_API_URL=${{ secrets.NEXT_PUBLIC_WEB_API_URL }}" >> .env.local
           
       - name: Build static site
         run: |
