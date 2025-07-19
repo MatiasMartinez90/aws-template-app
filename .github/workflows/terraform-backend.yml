@@ -49,13 +49,11 @@ jobs:
           ls -la lambda/
           
           cd lambda
-          if [ ! -f postConfirmation.zip ]; then
-            echo "🔨 Creating Lambda ZIP..."
-            zip -r postConfirmation.zip postConfirmation.py
-            echo "✅ Created postConfirmation.zip"
-          else
-            echo "✅ postConfirmation.zip already exists"
-          fi
+          
+          # Siempre rebuildeamos el ZIP para asegurar dependencias actualizadas
+          echo "🔨 Building Lambda ZIP with dependencies..."
+          chmod +x package.sh
+          ./package.sh
           
           echo "📊 Final ZIP info:"
           ls -la postConfirmation.zip
@@ -182,6 +180,8 @@ jobs:
             -var="db_host=${{ secrets.DB_HOST }}" \
             -var="db_user=${{ secrets.DB_USER }}" \
             -var="db_password=${{ secrets.DB_PASSWORD }}" \
+            -var="db_name=${{ secrets.DB_NAME }}" \
+            -var="db_port=${{ secrets.DB_PORT }}" \
             -var="production_callback_url=https://${{ vars.DOMAIN || 'template.cloud-it.com.ar' }}" \
             -var="production_logout_url=https://${{ vars.DOMAIN || 'template.cloud-it.com.ar' }}" \
             -out=tfplan
