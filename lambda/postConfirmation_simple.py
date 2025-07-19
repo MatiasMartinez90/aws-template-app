@@ -1,5 +1,8 @@
 import json
 import logging
+import os
+import boto3
+from botocore.exceptions import ClientError
 
 # Configurar logging
 logger = logging.getLogger()
@@ -7,40 +10,35 @@ logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     """
-    Handler para el post-confirmation trigger de Cognito
-    Versión simplificada que solo logea (sin PostgreSQL por ahora)
+    Handler para el post-confirmation trigger de Cognito - VERSION SIMPLE SIN PSYCOPG2
     """
-    
-    logger.info(f"Received event: {json.dumps(event)}")
-    
-    # Verificar que es un evento de confirmación de registro
-    if event.get('triggerSource') != 'PostConfirmation_ConfirmSignUp':
-        logger.info("No es un evento de confirmación de registro, saltando...")
-        return event
-    
     try:
-        # Extraer datos del usuario del evento
-        user_attributes = event.get('request', {}).get('userAttributes', {})
+        logger.info(f"🎯 PostConfirmation trigger ejecutado! Event: {json.dumps(event)}")
         
-        user_data = {
-            'cognito_user_id': event.get('userName'),
-            'email': user_attributes.get('email'),
-            'name': user_attributes.get('name'),
-            'picture_url': user_attributes.get('picture'),
-            'provider': 'google'
-        }
+        # Extraer información del usuario
+        user_attributes = event['request']['userAttributes']
+        username = event['userName']
+        user_pool_id = event['userPoolId']
+        trigger_source = event['triggerSource']
         
-        logger.info(f"✅ Usuario registrado exitosamente!")
-        logger.info(f"📧 Email: {user_data['email']}")
-        logger.info(f"👤 Nombre: {user_data['name']}")
-        logger.info(f"🆔 Cognito ID: {user_data['cognito_user_id']}")
+        email = user_attributes.get('email', 'No email')
+        name = user_attributes.get('name', 'No name')
         
-        # TODO: Agregar integración con PostgreSQL cuando tengamos las dependencias
-        # TODO: Agregar envío de emails de bienvenida
+        logger.info(f"👤 Usuario registrado:")
+        logger.info(f"   - Username: {username}")
+        logger.info(f"   - Email: {email}")
+        logger.info(f"   - Name: {name}")
+        logger.info(f"   - User Pool: {user_pool_id}")
+        logger.info(f"   - Trigger Source: {trigger_source}")
+        
+        # TODO: Aquí iría la conexión a PostgreSQL una vez que resolvamos psycopg2
+        logger.info("✅ PostConfirmation completado exitosamente (sin DB por ahora)")
         
         return event
         
     except Exception as e:
-        logger.error(f"❌ Error procesando usuario: {str(e)}")
-        # No fallar el proceso de registro, solo loggear el error
+        logger.error(f"❌ Error en PostConfirmation: {str(e)}")
+        logger.error(f"❌ Event completo: {json.dumps(event)}")
+        
+        # No fallar el login, solo logear el error
         return event
