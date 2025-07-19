@@ -23,9 +23,18 @@ provider "aws" {
 
 provider "random" {}
 
+# S3 bucket object para el código de Lambda
+resource "aws_s3_object" "lambda_zip" {
+  bucket = "terraform-state-bucket-xj3gjz0e"
+  key    = "lambda/postConfirmation.zip"
+  source = "../../lambda/postConfirmation.zip"
+  etag   = filemd5("../../lambda/postConfirmation.zip")
+}
+
 # Lambda function para post-confirmation
 resource "aws_lambda_function" "post_confirmation" {
-  filename         = "../../lambda/postConfirmation.zip"
+  s3_bucket        = aws_s3_object.lambda_zip.bucket
+  s3_key           = aws_s3_object.lambda_zip.key
   function_name    = "PostConfirmationFn-demo-app"
   role             = aws_iam_role.lambda_role.arn
   handler          = "postConfirmation.lambda_handler"
