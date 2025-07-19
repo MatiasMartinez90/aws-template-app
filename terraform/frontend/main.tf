@@ -29,12 +29,6 @@ provider "aws" {
 
 provider "random" {}
 
-# Locals para configuración dinámica
-locals {
-  # Generate unique domain if requested
-  unique_domain = var.use_unique_subdomain ? replace(var.domain_name, "aws-template", "aws-template-${random_string.suffix.result}") : var.domain_name
-}
-
 # Data source para obtener outputs del backend
 data "terraform_remote_state" "backend" {
   backend = "s3"
@@ -144,7 +138,7 @@ resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
 # ACM Certificate para proyectos.cloudacademy.ar
 resource "aws_acm_certificate" "website_cert" {
   provider          = aws.us_east_1 # Los certificados de CloudFront deben estar en us-east-1
-  domain_name       = local.unique_domain
+  domain_name       = var.domain_name
   validation_method = "DNS"
 
   lifecycle {
@@ -178,7 +172,7 @@ resource "aws_cloudfront_distribution" "website_distribution" {
   is_ipv6_enabled     = true
   price_class         = "PriceClass_All"
   default_root_object = "index.html"
-  aliases             = [local.unique_domain]
+  aliases             = [var.domain_name]
 
   origin {
     domain_name = aws_s3_bucket.website_bucket.bucket_regional_domain_name
@@ -241,11 +235,6 @@ resource "aws_cloudfront_distribution" "website_distribution" {
 output "frontend_endpoint" {
   description = "Frontend Endpoint"
   value       = aws_cloudfront_distribution.website_distribution.domain_name
-}
-
-output "custom_domain" {
-  description = "Custom domain name configured for this deployment"
-  value       = local.unique_domain
 }
 
 output "website_bucket_name" {

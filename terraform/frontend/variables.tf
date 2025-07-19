@@ -4,9 +4,3 @@ variable "domain_name" {
   type        = string
   default     = "aws-template.cloud-it.com.ar"
 }
-
-variable "use_unique_subdomain" {
-  description = "Add random suffix to subdomain for unique deployments"
-  type        = bool
-  default     = true
-}
