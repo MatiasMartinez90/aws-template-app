@@ -10,9 +10,9 @@ rm -rf package/
 # Crear directorio temporal
 mkdir -p package
 
-# Instalar dependencias de Python directamente
+# Instalar dependencias de Python
 echo "🐍 Instalando dependencias de Python..."
-pip3 install -r requirements.txt -t package/ --platform linux_x86_64 --only-binary=:all:
+pip3 install -r requirements.txt -t package/
 
 # Copiar código fuente
 echo "📄 Copiando código fuente..."
