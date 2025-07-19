@@ -12,7 +12,7 @@ mkdir -p package
 
 # Instalar dependencias de Python directamente
 echo "🐍 Instalando dependencias de Python..."
-pip3 install -r requirements.txt -t package/ --python-version 3.9 --platform linux_x86_64 --only-binary=:all:
+pip3 install -r requirements.txt -t package/ --platform linux_x86_64 --only-binary=:all:
 
 # Copiar código fuente
 echo "📄 Copiando código fuente..."
