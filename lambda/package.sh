@@ -14,8 +14,9 @@ mkdir -p package
 echo "🐍 Instalando dependencias de Python con Docker..."
 docker run --rm \
   -v $(pwd):/var/task \
+  -w /var/task \
   public.ecr.aws/lambda/python:3.9 \
-  pip install -r requirements.txt -t package/
+  sh -c "pip install -r requirements.txt -t package/ && echo '✅ Dependencies installed successfully'"
 
 # Copiar código fuente
 echo "📄 Copiando código fuente..."
