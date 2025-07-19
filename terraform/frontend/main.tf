@@ -150,7 +150,7 @@ resource "aws_acm_certificate" "website_cert" {
 resource "aws_acm_certificate_validation" "website_cert_validation" {
   provider        = aws.us_east_1
   certificate_arn = aws_acm_certificate.website_cert.arn
-  
+
   # Note: DNS validation records must be created manually in Cloudflare
   # This resource will wait for certificate validation to complete
   timeouts {
