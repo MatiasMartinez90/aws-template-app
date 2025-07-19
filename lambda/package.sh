@@ -10,13 +10,9 @@ rm -rf package/
 # Crear directorio temporal
 mkdir -p package
 
-# Instalar dependencias de Python usando Docker para compatibilidad de Lambda
-echo "🐍 Instalando dependencias de Python con Docker..."
-docker run --rm \
-  -v $(pwd):/var/task \
-  -w /var/task \
-  public.ecr.aws/lambda/python:3.9 \
-  sh -c "pip install -r requirements.txt -t package/ && echo '✅ Dependencies installed successfully'"
+# Instalar dependencias de Python directamente
+echo "🐍 Instalando dependencias de Python..."
+pip3 install -r requirements.txt -t package/ --python-version 3.9 --platform linux_x86_64 --only-binary=:all:
 
 # Copiar código fuente
 echo "📄 Copiando código fuente..."
