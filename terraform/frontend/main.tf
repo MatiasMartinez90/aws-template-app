@@ -148,7 +148,7 @@ resource "aws_acm_certificate" "website_cert" {
 
 # CloudFront Function para rewrite
 resource "aws_cloudfront_function" "rewrite_function" {
-  name    = "RewriteFunction"
+  name    = "RewriteFunction-${random_string.suffix.result}"
   runtime = "cloudfront-js-1.0"
   publish = true
   code    = file("../../cloudfrontfunction/rewrite.js")
