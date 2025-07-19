@@ -35,7 +35,7 @@ resource "aws_s3_object" "lambda_zip" {
 resource "aws_lambda_function" "post_confirmation" {
   s3_bucket        = aws_s3_object.lambda_zip.bucket
   s3_key           = aws_s3_object.lambda_zip.key
-  function_name    = "PostConfirmationFn-${var.project_name || "template-app"}"
+  function_name    = "PostConfirmationFn-${var.project_name}"
   role             = aws_iam_role.lambda_role.arn
   handler          = "postConfirmation.lambda_handler"
   runtime          = "python3.9"
@@ -215,7 +215,7 @@ resource "aws_cognito_identity_provider" "google" {
 
 # Cognito User Pool Domain para OAuth
 resource "aws_cognito_user_pool_domain" "user_pool_domain" {
-  domain       = "${var.project_name || "template-app"}-auth-${random_string.domain_suffix.result}"
+  domain       = "${var.project_name}-auth-${random_string.domain_suffix.result}"
   user_pool_id = aws_cognito_user_pool.user_pool.id
 }
 
