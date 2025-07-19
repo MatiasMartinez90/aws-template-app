@@ -23,6 +23,16 @@ provider "aws" {
 
 provider "random" {}
 
+# Data source para obtener el CloudFront distribution si existe
+data "terraform_remote_state" "frontend" {
+  backend = "s3"
+  config = {
+    bucket = "terraform-state-bucket-xj3gjz0e"
+    key    = "aws-template-app/frontend/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
 # S3 bucket object para el código de Lambda
 resource "aws_s3_object" "lambda_zip" {
   bucket = "terraform-state-bucket-xj3gjz0e"
@@ -243,18 +253,21 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   allowed_oauth_scopes                 = ["email", "openid", "profile"]
 
   # Callback URLs para la aplicación
-  callback_urls = [
+  callback_urls = compact([
     "https://${aws_cognito_user_pool_domain.user_pool_domain.domain}.auth.us-east-1.amazoncognito.com/oauth2/idpresponse",
-    "http://localhost:3000/admin",          # Para desarrollo local admin
     "http://localhost:3000",                # Para desarrollo local
-    "${var.production_callback_url}/admin", # URL de producción admin (PRIMERA)
-    var.production_callback_url             # URL de producción (home)
-  ]
+    "http://localhost:3000/admin",          # Para desarrollo local admin
+    var.production_callback_url,            # URL de producción (home)
+    "${var.production_callback_url}/admin", # URL de producción admin
+    try(data.terraform_remote_state.frontend.outputs.frontend_endpoint, null) != null ? "https://${data.terraform_remote_state.frontend.outputs.frontend_endpoint}" : null,           # CloudFront URL (home)
+    try(data.terraform_remote_state.frontend.outputs.frontend_endpoint, null) != null ? "https://${data.terraform_remote_state.frontend.outputs.frontend_endpoint}/admin" : null # CloudFront URL (admin)
+  ])
 
-  logout_urls = [
+  logout_urls = compact([
     "http://localhost:3000",
-    var.production_logout_url
-  ]
+    var.production_logout_url,
+    try(data.terraform_remote_state.frontend.outputs.frontend_endpoint, null) != null ? "https://${data.terraform_remote_state.frontend.outputs.frontend_endpoint}" : null
+  ])
 
   # Supported identity providers
   supported_identity_providers = ["Google"]

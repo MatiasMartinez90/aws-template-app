@@ -20,9 +20,15 @@ variable "google_client_secret" {
 
 # Variables para URLs de callback
 variable "production_callback_url" {
-  description = "Production callback URL for OAuth"
+  description = "Production callback URL for OAuth (custom domain)"
   type        = string
   default     = "https://demo.localhost.com"
+}
+
+variable "cloudfront_callback_url" {
+  description = "CloudFront callback URL for OAuth"
+  type        = string
+  default     = ""
 }
 
 variable "production_logout_url" {
