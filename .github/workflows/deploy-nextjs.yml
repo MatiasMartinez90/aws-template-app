@@ -27,6 +27,13 @@ jobs:
           cd app
           npm install --legacy-peer-deps
           
+      - name: Apply template configuration
+        run: |
+          # Create .env file from example with template values
+          cp .env.example .env
+          # Run the configuration script to apply template branding
+          npm run config
+          
       - name: Set Web API URL environment variable
         run: |
           cd app
