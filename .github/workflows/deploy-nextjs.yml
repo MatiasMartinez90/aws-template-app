@@ -1,14 +1,13 @@
-name: Build and Deploy to S3
+name: Build and Deploy Next.js to S3
 on:
   push:
     branches:
-      - bedrock1
-      - vpc
-      - retorno
+      - main
+      - develop
     paths:
       - 'app/**'
-      - 'cloudfrontfunction/**'
       - '.github/workflows/deploy-nextjs.yml'
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -38,12 +37,12 @@ jobs:
           cd app
           npm run build
           
-      - name: Crear env.json
+      - name: Crear env.json con valores deployados
         run: |
           echo '{
-            "cognitoUserPoolId": "us-east-1_kbBZ0w9sf",
-            "cognitoUserPoolWebClientId": "7ho22jco9j63c3hmsrsp4bj0ti",
-            "cognitoDomain": "cloudacademy-auth-yoq6skaz.auth.us-east-1.amazoncognito.com"
+            "cognitoUserPoolId": "us-east-1_8V0hE099p",
+            "cognitoUserPoolWebClientId": "uf9pb9md0u9spd2d1mdf5gudd",
+            "cognitoDomain": "template-app-auth-xpc62lbv.auth.us-east-1.amazoncognito.com"
           }' > ./app/out/env.json
           
       - name: Configure AWS credentials
@@ -55,3 +54,9 @@ jobs:
           
       - name: Deploy to S3
         run: aws s3 sync ./app/out s3://website-bucket-5d2io74t/ --delete
+        
+      - name: Invalidate CloudFront Cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id E224Y1LFZQSTPJ \
+            --paths "/*"
