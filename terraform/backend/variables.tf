@@ -1,3 +1,10 @@
+# Project configuration
+variable "project_name" {
+  description = "Project name for unique resource naming"
+  type        = string
+  default     = "template-app"
+}
+
 # Variables para Google OAuth (deben ser definidas)
 variable "google_client_id" {
   description = "Google OAuth Client ID"

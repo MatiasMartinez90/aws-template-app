@@ -176,6 +176,7 @@ jobs:
         id: plan
         run: |
           terraform plan -no-color \
+            -var="project_name=${{ vars.PROJECT_NAME }}" \
             -var="google_client_id=${{ secrets.GOOGLE_CLIENT_ID }}" \
             -var="google_client_secret=${{ secrets.GOOGLE_CLIENT_SECRET }}" \
             -var="db_host=${{ secrets.DB_HOST }}" \
