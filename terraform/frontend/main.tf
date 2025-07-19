@@ -146,6 +146,18 @@ resource "aws_acm_certificate" "website_cert" {
   }
 }
 
+# ACM Certificate Validation
+resource "aws_acm_certificate_validation" "website_cert_validation" {
+  provider        = aws.us_east_1
+  certificate_arn = aws_acm_certificate.website_cert.arn
+  
+  # Note: DNS validation records must be created manually in Cloudflare
+  # This resource will wait for certificate validation to complete
+  timeouts {
+    create = "10m"
+  }
+}
+
 # CloudFront Function para rewrite
 resource "aws_cloudfront_function" "rewrite_function" {
   name    = "RewriteFunction-${random_string.suffix.result}"
@@ -208,12 +220,12 @@ resource "aws_cloudfront_distribution" "website_distribution" {
   }
 
   viewer_certificate {
-    acm_certificate_arn      = aws_acm_certificate.website_cert.arn
+    acm_certificate_arn      = aws_acm_certificate_validation.website_cert_validation.certificate_arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }
 
-  depends_on = [aws_acm_certificate.website_cert]
+  depends_on = [aws_acm_certificate_validation.website_cert_validation]
 }
 
 # Nota: El deployment de archivos se maneja con GitHub Actions
