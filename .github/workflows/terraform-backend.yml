@@ -40,19 +40,29 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: 📦 Build Lambda ZIP
+      - name: 📦 Verify/Create Lambda ZIP
         working-directory: ./
         run: |
-          # Crear el ZIP en el directorio lambda/ desde la raíz del proyecto
+          echo "📂 Current directory structure:"
+          ls -la
+          echo "📂 Lambda directory:"
+          ls -la lambda/
+          
           cd lambda
           if [ ! -f postConfirmation.zip ]; then
+            echo "🔨 Creating Lambda ZIP..."
             zip -r postConfirmation.zip postConfirmation.py
             echo "✅ Created postConfirmation.zip"
-            ls -la postConfirmation.zip
           else
             echo "✅ postConfirmation.zip already exists"
-            ls -la postConfirmation.zip
           fi
+          
+          echo "📊 Final ZIP info:"
+          ls -la postConfirmation.zip
+          
+          echo "🔍 Verifying from terraform perspective:"
+          cd ../terraform/backend
+          ls -la ../../lambda/postConfirmation.zip
 
       - name: 🔧 Terraform Format Check
         run: terraform fmt -check -recursive
