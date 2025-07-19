@@ -40,6 +40,16 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
+      - name: 📦 Build Lambda ZIP
+        run: |
+          cd ../../lambda
+          if [ ! -f postConfirmation.zip ]; then
+            zip -r postConfirmation.zip postConfirmation.py
+            echo "✅ Created postConfirmation.zip"
+          else
+            echo "✅ postConfirmation.zip already exists"
+          fi
+
       - name: 🔧 Terraform Format Check
         run: terraform fmt -check -recursive
         continue-on-error: false
